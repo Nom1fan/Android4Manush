@@ -66,10 +66,8 @@ public class RatingPalDAOImpl extends BaseDAO implements RatingPalDAO {
 
     @Override // Update
     public void update(List<RatingPalDBO> dbos) {
-        ContentValues contentValues = populateContentValues(dbos);
-        for (RatingPalDBO dbo : dbos) {
-            getWritableDatabase().update(TABLE_NAME, contentValues, getWhereClause(), getWhereArgs(dbo));
-        }
+        delete(dbos);
+        insert(dbos);
     }
 
     @Override // Delete

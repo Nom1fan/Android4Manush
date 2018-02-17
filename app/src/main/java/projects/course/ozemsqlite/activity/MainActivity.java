@@ -69,6 +69,8 @@ public class MainActivity extends Activity implements OnClickListener {
         handleBtnViewAll(view);
 
         handleBtnDelete(view);
+
+        handleBtnModify(view);
 //        if (view == btnDelete) {
 //            if (text.toString().trim().length() == 0) {
 //                showMessage("Error", "Please enter Rollno");
@@ -117,6 +119,8 @@ public class MainActivity extends Activity implements OnClickListener {
 //            showMessage("Student Management Application", "- SMA");
 //        }
     }
+
+
 
     public void clearText() {
         List<EditText> allEditTextsInView = getAllEditTextsInView((AbsoluteLayout) myLayout);
@@ -227,6 +231,21 @@ public class MainActivity extends Activity implements OnClickListener {
         return !editTextJourneyId.getText().toString().trim().isEmpty() &&
                 !editTextCustomerId.getText().toString().trim().isEmpty() &&
                 !editTextLocalPalNum.toString().trim().isEmpty();
+    }
+
+    private void handleBtnModify(View view) {
+        if(view == btnModify) {
+            if (!areAllFieldsValid()) {
+                showMessage("Error", "All fields must be filled out");
+                return;
+            }
+
+            List<RatingPalDBO> ratingPalDBOS = extractRatingPalDBOSFromUI();
+            ratingPalDao.update(ratingPalDBOS);
+
+            showMessage("Success", "Record modified");
+            clearText();
+        }
     }
 
 }
