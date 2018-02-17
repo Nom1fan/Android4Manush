@@ -220,7 +220,11 @@ public class MainActivity extends Activity implements OnClickListener {
             }
 
             List<RatingPalDBO> ratingPalDBOS = extractRatingPalDBOSFromUI();
-            ratingPalDao.delete(ratingPalDBOS);
+            int numRowsDeleted = ratingPalDao.delete(ratingPalDBOS);
+            if (numRowsDeleted == 0) {
+                showMessage("Error", "Record not found!");
+                return;
+            }
 
             showMessage("Success", "Record deleted");
             clearText();
@@ -241,7 +245,11 @@ public class MainActivity extends Activity implements OnClickListener {
             }
 
             List<RatingPalDBO> ratingPalDBOS = extractRatingPalDBOSFromUI();
-            ratingPalDao.update(ratingPalDBOS);
+            int numRowsUpdated = ratingPalDao.update(ratingPalDBOS);
+            if (numRowsUpdated == 0) {
+                showMessage("Error", "Record not found!");
+                return;
+            }
 
             showMessage("Success", "Record modified");
             clearText();

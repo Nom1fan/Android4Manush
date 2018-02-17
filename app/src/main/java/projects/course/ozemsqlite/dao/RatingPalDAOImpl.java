@@ -65,16 +65,22 @@ public class RatingPalDAOImpl extends BaseDAO implements RatingPalDAO {
     }
 
     @Override // Update
-    public void update(List<RatingPalDBO> dbos) {
-        delete(dbos);
-        insert(dbos);
+    public int update(List<RatingPalDBO> dbos) {
+        int numRowsDeleted = delete(dbos);
+        if (numRowsDeleted !=0) {
+            insert(dbos);
+        }
+        return numRowsDeleted;
     }
 
     @Override // Delete
-    public void delete(List<RatingPalDBO> dbos) {
+    public int delete(List<RatingPalDBO> dbos) {
+        int totalRowsDeleted = 0;
         for (RatingPalDBO dbo : dbos) {
-            getWritableDatabase().delete(RatingPalTable.TABLE_NAME, getWhereClause(), getWhereArgs(dbo));
+            int numRowsDeleted = getWritableDatabase().delete(RatingPalTable.TABLE_NAME, getWhereClause(), getWhereArgs(dbo));
+            totalRowsDeleted += numRowsDeleted;
         }
+        return totalRowsDeleted;
     }
 
     @NonNull

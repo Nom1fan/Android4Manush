@@ -12,9 +12,9 @@ public interface DAO<T extends DBO> {
 
     void insert(List<T> dbos);
 
-    void update(List<T> dbos);
+    int update(List<T> dbos);
 
-    void delete(List<T> dbos);
+    int delete(List<T> dbos);
 
     List<T> getAll();
 }
