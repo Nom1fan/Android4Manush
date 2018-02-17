@@ -1,0 +1,114 @@
+package projects.course.ozemsqlite.dao;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.ParseException;
+import android.support.annotation.NonNull;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import projects.course.ozemsqlite.dao.dbo.RatingPalDBO;
+import projects.course.ozemsqlite.dao.table.RatingPalTable;
+
+import static projects.course.ozemsqlite.dao.table.RatingPalTable.*;
+
+/**
+ * Created by מאור סטודיו on 17/02/2018.
+ */
+
+public class RatingPalDAOImpl extends BaseDAO implements RatingPalDAO {
+
+
+    public RatingPalDAOImpl(Context context) {
+        super(context);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+
+    }
+
+    @Override // Create
+    public void insert(List<RatingPalDBO> dbos) {
+        ContentValues contentValues = populateContentValues(dbos);
+        db.insert(TABLE_NAME, null, contentValues);
+    }
+
+    @Override // Read
+    public List<RatingPalDBO> get(List<RatingPalDBO> dbos) {
+        List<RatingPalDBO> ratingPalDBOS = new ArrayList<>();
+        Cursor c = db.rawQuery("SELECT * FROM " + RatingPalTable.TABLE_NAME, null);
+        if (c.moveToFirst()){
+            do {
+                RatingPalDBO dbo = new RatingPalDBO();
+                // Passing values
+                dbo.setJourneyId(c.getInt(0));
+                dbo.setCustomerNumber(c.getInt(1));
+                dbo.setLocalPalNumber(c.getInt(2));
+                try {
+                    dbo.setDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK).parse(c.getString(3)));
+                } catch (java.text.ParseException e) {
+                    e.printStackTrace();
+                }
+                dbo.setRate(c.getDouble(4));
+                ratingPalDBOS.add(dbo);
+            } while(c.moveToNext());
+        }
+        c.close();
+        db.close();
+
+        return ratingPalDBOS;
+    }
+
+    @Override // Update
+    public void update(List<RatingPalDBO> dbos) {
+        ContentValues contentValues = populateContentValues(dbos);
+        for (RatingPalDBO dbo : dbos) {
+            db.update(TABLE_NAME, contentValues, getWhereClause(), getWhereArgs(dbo));
+        }
+    }
+
+    @Override // Delete
+    public void delete(List<RatingPalDBO> dbos) {
+        for (RatingPalDBO dbo : dbos) {
+            db.delete(RatingPalTable.TABLE_NAME, getWhereClause(), getWhereArgs(dbo));
+        }
+    }
+
+    @NonNull
+    private ContentValues populateContentValues(List<RatingPalDBO> dbos) {
+        ContentValues contentValues = new ContentValues();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
+
+        for (RatingPalDBO dbo : dbos) {
+            contentValues.put(COL_DATE, sdf.format(dbo.getDate()));
+            contentValues.put(COL_CUSTOMER_NUMBER, dbo.getCustomerNumber());
+            contentValues.put(COL_JOURNEY_ID, dbo.getJourneyId());
+            contentValues.put(COL_LOCAL_PAL_NUMBER, dbo.getLocalPalNumber());
+            contentValues.put(COL_RATE, dbo.getRate());
+        }
+        return contentValues;
+    }
+
+    @NonNull
+    private String getWhereClause() {
+        return COL_CUSTOMER_NUMBER + " = ? AND " +
+                COL_JOURNEY_ID + " = ? AND " +
+                COL_LOCAL_PAL_NUMBER + " = ?";
+    }
+
+    @NonNull
+    private String[] getWhereArgs(RatingPalDBO dbo) {
+        return new String[]{String.valueOf(
+                dbo.getCustomerNumber()),
+                String.valueOf(dbo.getJourneyId()),
+                String.valueOf(dbo.getLocalPalNumber())};
+    }
+}
