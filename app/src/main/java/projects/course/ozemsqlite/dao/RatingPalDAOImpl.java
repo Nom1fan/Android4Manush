@@ -53,8 +53,8 @@ public class RatingPalDAOImpl extends BaseDAO implements RatingPalDAO {
                 dbo.setJourneyId(c.getInt(0));
                 dbo.setCustomerNumber(c.getInt(1));
                 dbo.setLocalPalNumber(c.getInt(2));
-                dbo.setDate(c.getString(3));
-                dbo.setRate(c.getDouble(4));
+                dbo.setRate(c.getInt(3));
+                dbo.setDate(c.getString(4));
                 ratingPalDBOS.add(dbo);
             } while (c.moveToNext());
         }

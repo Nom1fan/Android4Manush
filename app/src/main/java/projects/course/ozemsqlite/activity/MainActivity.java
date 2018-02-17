@@ -145,19 +145,12 @@ public class MainActivity extends Activity implements OnClickListener {
     private void handleBtnAdd(View view) {
         if (view == btnAdd) {
             if (!areAllFieldsValid()) {
-                showMessage("Error","All fields must be filled out");
+                showMessage("Error", "All fields must be filled out");
                 return;
             }
 
-            String date = editTextJourneyId.getText().toString();
-
-            try {
-                List<RatingPalDBO> ratingPalDBOS = extractRatingPalDBOSFromUI(date);
-                ratingPalDao.insert(ratingPalDBOS);
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            List<RatingPalDBO> ratingPalDBOS = extractRatingPalDBOSFromUI();
+            ratingPalDao.insert(ratingPalDBOS);
 
             showMessage("Success", "Record added");
             clearText();
@@ -168,9 +161,9 @@ public class MainActivity extends Activity implements OnClickListener {
     private List<EditText> getAllEditTextsInView(AbsoluteLayout layout) {
         List<EditText> myEditTextList = new ArrayList<>();
 
-        for( int i = 0; i < layout.getChildCount(); i++ )
-            if( layout.getChildAt( i ) instanceof EditText )
-                myEditTextList.add( (EditText) layout.getChildAt( i ) );
+        for (int i = 0; i < layout.getChildCount(); i++)
+            if (layout.getChildAt(i) instanceof EditText)
+                myEditTextList.add((EditText) layout.getChildAt(i));
         return myEditTextList;
     }
 
@@ -194,25 +187,19 @@ public class MainActivity extends Activity implements OnClickListener {
     }
 
     @NonNull
-    private List<RatingPalDBO> extractRatingPalDBOSFromUI(String date) throws ParseException {
+    private List<RatingPalDBO> extractRatingPalDBOSFromUI() {
+        List<RatingPalDBO> ratingPalDBOS = new ArrayList<>();
+
         final RatingPalDBO ratingPalDBO = new RatingPalDBO();
-        ratingPalDBO.setDate(date);
-        ratingPalDBO.setCustomerNumber(1);
-        ratingPalDBO.setJourneyId(1);
-        ratingPalDBO.setLocalPalNumber(2);
-        ratingPalDBO.setRate(1.9);
+        ratingPalDBO.setDate(editTextDate.getText().toString());
+        ratingPalDBO.setCustomerNumber(Integer.valueOf(editTextCustomerId.getText().toString()));
+        ratingPalDBO.setJourneyId(Integer.valueOf(editTextJourneyId.getText().toString()));
+        ratingPalDBO.setLocalPalNumber(Integer.valueOf(editTextLocalPalNum.getText().toString()));
+        ratingPalDBO.setRate(Integer.valueOf(editTextRate.getText().toString()));
 
-        final RatingPalDBO ratingPalDBO2 = new RatingPalDBO();
-        ratingPalDBO2.setDate(date);
-        ratingPalDBO2.setCustomerNumber(1);
-        ratingPalDBO2.setJourneyId(1);
-        ratingPalDBO2.setLocalPalNumber(2);
-        ratingPalDBO2.setRate(1.9);
+        ratingPalDBOS.add(ratingPalDBO);
 
-        return new ArrayList<RatingPalDBO>() {{
-            add(ratingPalDBO);
-            add(ratingPalDBO2);
-        }};
+        return ratingPalDBOS;
     }
 
 }

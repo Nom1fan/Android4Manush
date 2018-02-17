@@ -11,7 +11,7 @@ public class RatingPalDBO extends DBO {
     private int journeyId;
     private int customerNumber;
     private int localPalNumber;
-    private double rate;
+    private int rate;
 
     public String getDate() {
         return date;
@@ -49,7 +49,7 @@ public class RatingPalDBO extends DBO {
         return rate;
     }
 
-    public void setRate(double rate) {
+    public void setRate(int rate) {
         this.rate = rate;
     }
 
