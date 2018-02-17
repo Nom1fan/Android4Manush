@@ -38,28 +38,25 @@ public class RatingPalDAOImpl extends BaseDAO implements RatingPalDAO {
     @Override // Create
     public void insert(List<RatingPalDBO> dbos) {
         ContentValues contentValues = populateContentValues(dbos);
-        db.insert(TABLE_NAME, null, contentValues);
+        getWritableDatabase().insert(TABLE_NAME, null, contentValues);
     }
 
     @Override // Read
-    public List<RatingPalDBO> get(List<RatingPalDBO> dbos) {
+    public List<RatingPalDBO> getAll() {
         List<RatingPalDBO> ratingPalDBOS = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM " + RatingPalTable.TABLE_NAME, null);
-        if (c.moveToFirst()){
+        if (c.moveToFirst()) {
             do {
                 RatingPalDBO dbo = new RatingPalDBO();
                 // Passing values
                 dbo.setJourneyId(c.getInt(0));
                 dbo.setCustomerNumber(c.getInt(1));
                 dbo.setLocalPalNumber(c.getInt(2));
-                try {
-                    dbo.setDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK).parse(c.getString(3)));
-                } catch (java.text.ParseException e) {
-                    e.printStackTrace();
-                }
+                dbo.setDate(c.getString(3));
                 dbo.setRate(c.getDouble(4));
                 ratingPalDBOS.add(dbo);
-            } while(c.moveToNext());
+            } while (c.moveToNext());
         }
         c.close();
         db.close();
@@ -71,24 +68,23 @@ public class RatingPalDAOImpl extends BaseDAO implements RatingPalDAO {
     public void update(List<RatingPalDBO> dbos) {
         ContentValues contentValues = populateContentValues(dbos);
         for (RatingPalDBO dbo : dbos) {
-            db.update(TABLE_NAME, contentValues, getWhereClause(), getWhereArgs(dbo));
+            getWritableDatabase().update(TABLE_NAME, contentValues, getWhereClause(), getWhereArgs(dbo));
         }
     }
 
     @Override // Delete
     public void delete(List<RatingPalDBO> dbos) {
         for (RatingPalDBO dbo : dbos) {
-            db.delete(RatingPalTable.TABLE_NAME, getWhereClause(), getWhereArgs(dbo));
+            getWritableDatabase().delete(RatingPalTable.TABLE_NAME, getWhereClause(), getWhereArgs(dbo));
         }
     }
 
     @NonNull
     private ContentValues populateContentValues(List<RatingPalDBO> dbos) {
         ContentValues contentValues = new ContentValues();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
 
         for (RatingPalDBO dbo : dbos) {
-            contentValues.put(COL_DATE, sdf.format(dbo.getDate()));
+            contentValues.put(COL_DATE, dbo.getDate());
             contentValues.put(COL_CUSTOMER_NUMBER, dbo.getCustomerNumber());
             contentValues.put(COL_JOURNEY_ID, dbo.getJourneyId());
             contentValues.put(COL_LOCAL_PAL_NUMBER, dbo.getLocalPalNumber());

@@ -11,11 +11,9 @@ import projects.course.ozemsqlite.dao.table.RatingPalTable;
  * Created by מאור סטודיו on 17/02/2018.
  */
 
-public abstract class BaseDAO extends SQLiteOpenHelper {
+public class BaseDAO extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "RAFIKI";
-
-    protected SQLiteDatabase db;
 
     public BaseDAO(Context context) {
         super(context, DB_NAME, null, 1);
@@ -23,7 +21,11 @@ public abstract class BaseDAO extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        this.db = db;
         db.execSQL("CREATE TABLE IF NOT EXISTS " + RatingPalTable.TABLE_NAME + " ( `journeyId` INT, `customerNumber` INT, `localPalNumber` INT, `rate` DOUBLE , `date` VARCHAR);");
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+
     }
 }

@@ -7,17 +7,17 @@ import java.util.Date;
  */
 public class RatingPalDBO extends DBO {
 
-    private Date date;
+    private String date;
     private int journeyId;
     private int customerNumber;
     private int localPalNumber;
     private double rate;
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -51,5 +51,16 @@ public class RatingPalDBO extends DBO {
 
     public void setRate(double rate) {
         this.rate = rate;
+    }
+
+    @Override
+    public String toString() {
+        return "RatingPalDBO{" +
+                "date=" + date +
+                ", journeyId=" + journeyId +
+                ", customerNumber=" + customerNumber +
+                ", localPalNumber=" + localPalNumber +
+                ", rate=" + rate +
+                '}';
     }
 }

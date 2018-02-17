@@ -2,37 +2,33 @@ package projects.course.ozemsqlite.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
-import android.database.Cursor;
-
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.Editable;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.sql.Date;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import projects.course.ozemsqlite.R;
-import projects.course.ozemsqlite.dao.DAO;
 import projects.course.ozemsqlite.dao.DAOFactory;
-import projects.course.ozemsqlite.dao.DAOFactoryImpl;
+import projects.course.ozemsqlite.dao.RatingPalDAO;
 import projects.course.ozemsqlite.dao.dbo.RatingPalDBO;
 import projects.course.ozemsqlite.dao.table.DAOFactoryProvider;
 import projects.course.ozemsqlite.dao.table.RatingPalTable;
 
 public class MainActivity extends Activity implements OnClickListener {
-    EditText editRollno, editName, editMarks;
+    EditText editTextJourneyId, editTextCustomerId, editTextLocalPalNum, editTextRate, editTextDate;
     Button btnAdd, btnDelete, btnModify, btnView, btnViewAll, btnShowInfo;
+    View myLayout;
 
     DAOFactory daoFactory;
+
+    RatingPalDAO ratingPalDao;
 
     /**
      * Called when the activity is first created.
@@ -41,9 +37,15 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        editRollno = findViewById(R.id.editRollno);
-        editName = findViewById(R.id.editName);
-        editMarks = findViewById(R.id.editMarks);
+
+        myLayout = findViewById(R.id.myLayout);
+
+        editTextJourneyId = findViewById(R.id.editText_journeyId);
+        editTextCustomerId = findViewById(R.id.editText_customerNum);
+        editTextLocalPalNum = findViewById(R.id.editText_localPalNum);
+        editTextRate = findViewById(R.id.editText_rate);
+        editTextDate = findViewById(R.id.editText_date);
+
         btnAdd = findViewById(R.id.btnAdd);
         btnDelete = findViewById(R.id.btnDelete);
         btnModify = findViewById(R.id.btnModify);
@@ -58,10 +60,13 @@ public class MainActivity extends Activity implements OnClickListener {
         btnShowInfo.setOnClickListener(this);
 
         daoFactory = DAOFactoryProvider.createDAOFactory(this);
+        ratingPalDao = daoFactory.getDAO(RatingPalTable.TABLE_NAME);
     }
 
     public void onClick(View view) {
         handleBtnAdd(view);
+
+        handleBtnViewAll(view);
 
 
 //        if (view == btnDelete) {
@@ -85,7 +90,7 @@ public class MainActivity extends Activity implements OnClickListener {
 //            }
 //            Cursor c = db.rawQuery("SELECT * FROM student WHERE rollno='" + text + "'", null);
 //            if (c.moveToFirst()) {
-//                db.execSQL("UPDATE student SET name='" + editName.getText() + "',marks='" + editMarks.getText() +
+//                db.execSQL("UPDATE student SET name='" + editTextCustomerId.getText() + "',marks='" + editTextLocalPalNum.getText() +
 //                        "' WHERE rollno='" + text + "'");
 //                showMessage("Success", "Record Modified");
 //            } else {
@@ -100,44 +105,55 @@ public class MainActivity extends Activity implements OnClickListener {
 //            }
 //            Cursor c = db.rawQuery("SELECT * FROM student WHERE rollno='" + text + "'", null);
 //            if (c.moveToFirst()) {
-//                editName.setText(c.getString(1));
-//                editMarks.setText(c.getString(2));
+//                editTextCustomerId.setText(c.getString(1));
+//                editTextLocalPalNum.setText(c.getString(2));
 //            } else {
 //                showMessage("Error", "Invalid Rollno");
 //                clearText();
 //            }
 //        }
-//        if (view == btnViewAll) {
-//            Cursor c = db.rawQuery("SELECT * FROM student", null);
-//            if (c.getCount() == 0) {
-//                showMessage("Error", "No records found");
-//                return;
-//            }
-//            StringBuffer buffer = new StringBuffer();
-//            while (c.moveToNext()) {
-//                buffer.append("Rollno: " + c.getString(0) + "\n");
-//                buffer.append("Name: " + c.getString(1) + "\n");
-//                buffer.append("Marks: " + c.getString(2) + "\n\n");
-//            }
-//            showMessage("Student Details", buffer.toString());
-//        }
+
 //        if (view == btnShowInfo) {
 //            showMessage("Student Management Application", "- SMA");
 //        }
     }
 
+    public void clearText() {
+        List<EditText> allEditTextsInView = getAllEditTextsInView((AbsoluteLayout) myLayout);
+        for (EditText editText : allEditTextsInView) {
+            editText.setText("");
+        }
+        editTextJourneyId.requestFocus();
+    }
+
+    private void handleBtnViewAll(View view) {
+        if (view == btnViewAll) {
+            List<RatingPalDBO> ratingPalDBOS = ratingPalDao.getAll();
+            if (ratingPalDBOS.size() == 0) {
+                showMessage("Error", "No records found");
+                return;
+            }
+            StringBuilder builder = new StringBuilder();
+            for (RatingPalDBO ratingPalDBO : ratingPalDBOS) {
+                builder.append(ratingPalDBO.toString()).append("\n");
+            }
+
+            showMessage("Rating Pal Details", builder.toString());
+        }
+    }
+
     private void handleBtnAdd(View view) {
         if (view == btnAdd) {
-            if (areAllFieldsValid()) {
+            if (!areAllFieldsValid()) {
+                showMessage("Error","All fields must be filled out");
                 return;
             }
 
-            String date = editRollno.getText().toString();
+            String date = editTextJourneyId.getText().toString();
 
             try {
                 List<RatingPalDBO> ratingPalDBOS = extractRatingPalDBOSFromUI(date);
-                DAO dao = daoFactory.getDAO(RatingPalTable.TABLE_NAME);
-                dao.insert(ratingPalDBOS);
+                ratingPalDao.insert(ratingPalDBOS);
 
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -149,16 +165,45 @@ public class MainActivity extends Activity implements OnClickListener {
     }
 
     @NonNull
+    private List<EditText> getAllEditTextsInView(AbsoluteLayout layout) {
+        List<EditText> myEditTextList = new ArrayList<>();
+
+        for( int i = 0; i < layout.getChildCount(); i++ )
+            if( layout.getChildAt( i ) instanceof EditText )
+                myEditTextList.add( (EditText) layout.getChildAt( i ) );
+        return myEditTextList;
+    }
+
+    private boolean areAllFieldsValid() {
+        List<EditText> myEditTextList = getAllEditTextsInView((AbsoluteLayout) myLayout);
+
+        for (EditText editText : myEditTextList) {
+            if (editText.getText().toString().isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void showMessage(String title, String message) {
+        Builder builder = new Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.show();
+    }
+
+    @NonNull
     private List<RatingPalDBO> extractRatingPalDBOSFromUI(String date) throws ParseException {
         final RatingPalDBO ratingPalDBO = new RatingPalDBO();
-        ratingPalDBO.setDate((Date) new SimpleDateFormat("yyyy-HH-mm HH:mm:ss", Locale.UK).parse(date));
+        ratingPalDBO.setDate(date);
         ratingPalDBO.setCustomerNumber(1);
         ratingPalDBO.setJourneyId(1);
         ratingPalDBO.setLocalPalNumber(2);
         ratingPalDBO.setRate(1.9);
 
         final RatingPalDBO ratingPalDBO2 = new RatingPalDBO();
-        ratingPalDBO2.setDate((Date) new SimpleDateFormat("yyyy-HH-mm HH:mm:ss", Locale.UK).parse(date));
+        ratingPalDBO2.setDate(date);
         ratingPalDBO2.setCustomerNumber(1);
         ratingPalDBO2.setJourneyId(1);
         ratingPalDBO2.setLocalPalNumber(2);
@@ -170,24 +215,4 @@ public class MainActivity extends Activity implements OnClickListener {
         }};
     }
 
-    private boolean areAllFieldsValid() {
-        return editRollno.getText().toString().trim().length() == 0 ||
-                editName.getText().toString().trim().length() == 0 ||
-                editMarks.getText().toString().trim().length() == 0;
-    }
-
-    public void showMessage(String title, String message) {
-        Builder builder = new Builder(this);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.show();
-    }
-
-    public void clearText() {
-        editRollno.setText("");
-        editName.setText("");
-        editMarks.setText("");
-        editRollno.requestFocus();
-    }
 }

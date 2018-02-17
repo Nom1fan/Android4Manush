@@ -16,5 +16,5 @@ public interface DAO<T extends DBO> {
 
     void delete(List<T> dbos);
 
-    List<T> get(List<T> dbos);
+    List<T> getAll();
 }
