@@ -68,7 +68,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         handleBtnViewAll(view);
 
-
+        handleBtnDelete(view);
 //        if (view == btnDelete) {
 //            if (text.toString().trim().length() == 0) {
 //                showMessage("Error", "Please enter Rollno");
@@ -191,15 +191,42 @@ public class MainActivity extends Activity implements OnClickListener {
         List<RatingPalDBO> ratingPalDBOS = new ArrayList<>();
 
         final RatingPalDBO ratingPalDBO = new RatingPalDBO();
-        ratingPalDBO.setDate(editTextDate.getText().toString());
         ratingPalDBO.setCustomerNumber(Integer.valueOf(editTextCustomerId.getText().toString()));
         ratingPalDBO.setJourneyId(Integer.valueOf(editTextJourneyId.getText().toString()));
         ratingPalDBO.setLocalPalNumber(Integer.valueOf(editTextLocalPalNum.getText().toString()));
-        ratingPalDBO.setRate(Integer.valueOf(editTextRate.getText().toString()));
+
+        String date = editTextDate.getText().toString();
+        String rateString = editTextRate.getText().toString();
+        Integer rate = rateString.isEmpty() ? 0 : Integer.valueOf(rateString);
+
+        ratingPalDBO.setDate(date.isEmpty() ? null : date);
+        ratingPalDBO.setRate(rate);
 
         ratingPalDBOS.add(ratingPalDBO);
 
         return ratingPalDBOS;
+    }
+
+    private void handleBtnDelete(View view) {
+        if(view == btnDelete) {
+
+            if (!areAllFieldsForDeleteValid()) {
+                showMessage("Error", "For delete following fields must be filled out:\nJourney ID, Customer ID, Local Pal Num");
+                return;
+            }
+
+            List<RatingPalDBO> ratingPalDBOS = extractRatingPalDBOSFromUI();
+            ratingPalDao.delete(ratingPalDBOS);
+
+            showMessage("Success", "Record deleted");
+            clearText();
+        }
+    }
+
+    private boolean areAllFieldsForDeleteValid() {
+        return !editTextJourneyId.getText().toString().trim().isEmpty() &&
+                !editTextCustomerId.getText().toString().trim().isEmpty() &&
+                !editTextLocalPalNum.toString().trim().isEmpty();
     }
 
 }
