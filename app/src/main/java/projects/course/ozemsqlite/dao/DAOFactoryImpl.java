@@ -19,11 +19,10 @@ public class DAOFactoryImpl implements DAOFactory {
         daoMap = new HashMap<String, DAO>() {{
             put(RatingPalTable.TABLE_NAME, new RatingPalDAOImpl(context));
         }};
-
     }
 
     @Override
-    public <T extends DAO> T getDAO(String tableName) {
-        return (T) daoMap.get(tableName);
+    public DAO getDAO(String tableName) {
+        return daoMap.get(tableName);
     }
 }
