@@ -1,4 +1,4 @@
-package projects.course.ozemsqlite.dao.table;
+package projects.course.ozemsqlite.dao;
 
 import android.content.Context;
 
