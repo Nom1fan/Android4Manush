@@ -10,7 +10,6 @@ import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,7 @@ import projects.course.ozemsqlite.R;
 import projects.course.ozemsqlite.dao.DAOFactory;
 import projects.course.ozemsqlite.dao.RatingPalDAO;
 import projects.course.ozemsqlite.dao.dbo.RatingPalDBO;
-import projects.course.ozemsqlite.dao.table.DAOFactoryProvider;
+import projects.course.ozemsqlite.dao.DAOFactoryProvider;
 import projects.course.ozemsqlite.dao.table.RatingPalTable;
 
 public class MainActivity extends Activity implements OnClickListener {
