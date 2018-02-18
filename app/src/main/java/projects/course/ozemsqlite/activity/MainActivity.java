@@ -70,56 +70,7 @@ public class MainActivity extends Activity implements OnClickListener {
         handleBtnDelete(view);
 
         handleBtnModify(view);
-//        if (view == btnDelete) {
-//            if (text.toString().trim().length() == 0) {
-//                showMessage("Error", "Please enter Rollno");
-//                return;
-//            }
-//            Cursor c = db.rawQuery("SELECT * FROM student WHERE rollno='" + text + "'", null);
-//            if (c.moveToFirst()) {
-//                db.execSQL("DELETE FROM student WHERE rollno='" + text + "'");
-//                showMessage("Success", "Record Deleted");
-//            } else {
-//                showMessage("Error", "Invalid Rollno");
-//            }
-//            clearText();
-//        }
-//        if (view == btnModify) {
-//            if (text.toString().trim().length() == 0) {
-//                showMessage("Error", "Please enter Rollno");
-//                return;
-//            }
-//            Cursor c = db.rawQuery("SELECT * FROM student WHERE rollno='" + text + "'", null);
-//            if (c.moveToFirst()) {
-//                db.execSQL("UPDATE student SET name='" + editTextCustomerId.getText() + "',marks='" + editTextLocalPalNum.getText() +
-//                        "' WHERE rollno='" + text + "'");
-//                showMessage("Success", "Record Modified");
-//            } else {
-//                showMessage("Error", "Invalid Rollno");
-//            }
-//            clearText();
-//        }
-//        if (view == btnView) {
-//            if (text.toString().trim().length() == 0) {
-//                showMessage("Error", "Please enter Rollno");
-//                return;
-//            }
-//            Cursor c = db.rawQuery("SELECT * FROM student WHERE rollno='" + text + "'", null);
-//            if (c.moveToFirst()) {
-//                editTextCustomerId.setText(c.getString(1));
-//                editTextLocalPalNum.setText(c.getString(2));
-//            } else {
-//                showMessage("Error", "Invalid Rollno");
-//                clearText();
-//            }
-//        }
-
-//        if (view == btnShowInfo) {
-//            showMessage("Student Management Application", "- SMA");
-//        }
     }
-
-
 
     public void clearText() {
         List<EditText> allEditTextsInView = getAllEditTextsInView((AbsoluteLayout) myLayout);
@@ -136,7 +87,8 @@ public class MainActivity extends Activity implements OnClickListener {
                 showMessage("Error", "No records found");
                 return;
             }
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
+
             for (RatingPalDBO ratingPalDBO : ratingPalDBOS) {
                 builder.append(ratingPalDBO.toString()).append("\n");
             }
